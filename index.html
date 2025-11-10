@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<style>
+  /* Falange — oculta a frase da tela sem apagar nada */
+  span, p, div {
+    text-transform: none;
+  }
+  body * {
+    visibility: visible;
+  }
+  body *:has(> :where(span, p, div):contains("Vídeos realistas + audio de terror.")),
+  body *:contains("Vídeos realistas + audio de terror.") {
+    display: none !important;
+  }
+/* Efeito Falange — Palavras iluminadas */
+/* Efeito Falange — Palavras iluminadas */
+.voc {
+  color: #ffeb99;
+  font-family: "Georgia", serif;
+  font-weight: bold;
+  text-shadow:
+    0 0 6px #ffdd66,
+    0 0 12px #ffcc33,
+    0 0 24px #b37c00;
+  transition: all 0.4s ease-in-out;
+  cursor: pointer;
+}
+.voc:hover {
+  color: #fff9db;
+  text-shadow:
+    0 0 10px #ffe873,
+    0 0 20px #ffcf40,
+    0 0 35px #ffd966,
+    0 0 50px #ffcc33;
+  transform: scale(1.1);
+}
+/* ==== Layout Falange — modo leitura sobre vídeo ==== */
+body {
+  background: #000;
+  color: #fff;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.hero {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* fica totalmente no fundo */
+  overflow: hidden;
+}
+.hero video {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+    filter: brightness(0.9) contrast(1.05);
+
+}
+
+.hero video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7); /* deixa o vídeo mais visível atrás do texto */
+}
+
+/* Caixa de texto sobre o vídeo */
+#game, #start, #end {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 16px;
+  box-shadow: 0 0 12px #000a;
+  color: #f5f5f5;
+  line-height: 1.6;
+}
+
+/* Texto e botões */
+#scene-text {
+  font-size: 16px;
+  text-align: justify;
+  margin-bottom: 24px;
+}
+.btn {
+  background: #222;
+  color: #fff;
+  border: 2px solid #0ff;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 8px 4px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn:hover {
+  background: #0ff;
+  color: #000;
+}
+
+</style>
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Escapa de la Casa Encantada — Falange</title>
+<style>
+  :root{--bg:#090b10;--card:#101321;--muted:#a9b0c3;--accent:#8b5cf6;--accent-2:#22d3ee;--good:#10b981;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(80vw 80vh at 50% -10%, #161929 0%, var(--bg) 55%);color:#e8ecff;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+  .container{max-width:1000px;margin:0 auto;padding:24px}
+  header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;box-shadow:0 10px 30px rgba(139,92,246,.35)}
+  h1{font-size:clamp(20px,2.8vw,28px);margin:0}
+  .card{background:linear-gradient(180deg,#171a2b 0%,#0e1120 100%);border:1px solid rgba(255,255,255,.06);border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.45);overflow:hidden}
+  .pad{padding:20px}
+  .title{font-size:clamp(18px,2.2vw,22px);margin:0 0 6px;font-weight:800}
+  .subtitle{margin:0 0 16px;color:var(--muted)}
+  .choices{display:grid;gap:10px;margin-top:6px}
+  button{appearance:none;border:none;border-radius:12px;padding:14px 16px;font-weight:800;cursor:pointer;transition:.2s ease}
+  .btn{background:#23273a;color:#e8ecff;border:1px solid rgba(255,255,255,.08)}
+  .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.18)}
+  .primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1020}
+  .good{background:linear-gradient(135deg,#10b981,#22d3ee);color:#0b1020}
+  input{width:100%;background:#0f1324;color:#e8ecff;border:1px solid rgba(255,255,255,.08);padding:12px 14px;border-radius:12px}
+  .footer{margin-top:16px;color:var(--muted);font-size:.9rem;display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:#0f1324;border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:999px;font-size:.85rem;color:#c9cff0}
+  .hidden{display:none}
+  /* Cena com vídeo */
+  .hero{position:relative;height:min(46vh,420px);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:#0b0e19}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.08) saturate(1.05) brightness(.85)}
+  .hero-overlay{position:absolute;inset:0;background:radial-gradient(100% 120% at 50% 0%,rgba(0,0,0,.15) 0%,rgba(0,0,0,.65) 70%),linear-gradient(180deg,rgba(9,12,24,.6) 0%,rgba(9,12,24,1) 100%)}
+  .hero-caption{position:absolute;left:16px;bottom:14px;background:rgba(6,9,20,.55);backdrop-filter:blur(4px);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);font-weight:700}
+  .flash{position:fixed;inset:0;background:rgba(255,255,255,0);pointer-events:none;transition:background .35s ease}
+  .shake{animation:shake .6s ease} @keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+/* Efeito Falange — Palavras iluminadas */
+
+</style>
+
+<style>
+video#startVideo.bg-video{position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:-1;filter:brightness(.42) contrast(1.08) saturate(.9);opacity:1;transition:opacity .6s ease}
+video#startVideo.bg-video.fade{opacity:0}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(120% 80% at 30% 10%,rgba(0,0,0,.35),rgba(0,0,0,.75));pointer-events:none}
+</style>
+<style>
+  /* Falange — oculta a legenda de localização da cena (ex.: "El dormitorio — ático") */
+  .scene .label, .scene-title, .scene-header, .badge, .scene-info {
+    display: none !important;
+  }
+/* Efeito Falange — Palavras iluminadas */
+.voc {
+  color: #ffeb99;                      /* tom quente de luz de vela */
+  font-family: "Georgia", serif;       /* contraste com o texto pixelado */
+  font-weight: bold;
+  text-shadow:
+    0 0 6px #ffdd66,
+    0 0 12px #ffcc33,
+    0 0 24px #b37c00;                  /* brilho dourado profundo */
+  transition: all 0.4s ease-in-out;
+  cursor: pointer;
+}
+
+.voc:hover {
+  color: #fff9db;                      /* clareia ao passar o mouse */
+  text-shadow:
+    0 0 10px #ffe873,
+    0 0 20px #ffcf40,
+    0 0 35px #ffd966,
+    0 0 50px #ffcc33;                  /* chama tremulante */
+  transform: scale(1.1);
+}
+#export { display: none !important; }
+/* 1) Vídeo ocupando a tela toda (desktop) e grande no celular */
+.hero{
+  position: relative;
+  height: 100vh;          /* tela cheia no desktop */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+@media (max-width: 900px){
+  .hero{ height: 70vh; }  /* mobile: altura confortável */
+}
+
+/* video full-bleed, sem cortes */
+.hero video{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: none;
+  filter: brightness(0.9) contrast(1.05); /* deixa mais visível */
+}
+
+/* overlay SEM linha/borda e só um leve gradiente (se quiser, pode até remover) */
+.hero-overlay{
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.20) 0%,
+    rgba(0,0,0,.35) 50%,
+    rgba(0,0,0,0) 100%
+  );
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* legenda do vídeo (se usar) */
+.hero-caption{
+  position: absolute;
+  left: 50%; bottom: 24px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.35);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+/* 2) Some com a “linha” entre o vídeo e o conteúdo */
+.hero, .hero::before, .hero::after { border: none; box-shadow: none; }
+
+/* se a linha vier do bloco de baixo (.card), tira a borda/sombra do primeiro card */
+.card{ border: none; box-shadow: none; }
+.card:first-of-type{ border-top: none; margin-top: 0; }
+
+</style>
+
+
+</head>
+<body>
+  <!-- HERO fixo no topo -->
+  <div class="hero">
+    <video id="hero-video" autoplay muted loop playsinline></video>
+    <div class="hero-overlay"></div>
+    <div class="hero-caption" id="hero-cap">—</div>
+  </div>
+
+  <!-- Falange: vídeo curto (2–3s) na tela inicial -->
+
+<!-- Falange: vídeo curto (2–3s) na tela inicial -->
+<video id="startVideo" class="bg-video" autoplay muted loop playsinline preload="auto">
+  <source src="media/start_casa.mp4" type="video/mp4">
+</video>
+
+<!-- Áudio de fundo (terror) -->
+<audio id="bgm" src="sounds/horror-playhouse-404813.mp3" loop preload="auto"></audio>
+
+  <div class="flash" id="flash"></div>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo"><strong>F</strong></div>
+        <div>
+          <h1>Escapa de la Casa Encantada 👻</h1>
+          <div class="subtitle">Vídeos realistas + audio de terror.</div>
+        </div>
+      </div>
+      <div class="pill" id="player-pill">Jugador: —</div>
+    </header>
+
+    <!-- Start -->
+    <section id="start" class="card">
+      <div class="pad">
+        <h2 class="title">Antes de empezar…</h2>
+        <p class="subtitle">
+          Ingresa tus datos. Nada se envía a servidores — se guarda localmente.
+          <button id="testAudio" class="btn" style="padding:6px 10px;margin-left:8px">🔊 Probar</button>
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:1 1 260px">
+            <label for="name">Nombre</label>
+            <input id="name" placeholder="Ej.: Ana García" autofocus />
+          </div>
+          <div style="flex:1 1 260px">
+            <label for="class">Turma</label>
+            <input id="class" placeholder="Ej.: serie" />
+          </div>
+        </div>
+        <div class="footer">
+          <span class="subtitle">Usa auriculares para mayor inmersión.</span>
+          <!-- fallback onclick garante que o clique funcione -->
+          <button class="primary" id="btnStart" onclick="startGame()">Comenzar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game -->
+    <section id="game" class="card hidden">
+      
+      <div class="pad">
+        <h3 class="title" id="scene-title"></h3>
+        <p class="subtitle" id="scene-text"></p>
+        <div class="choices" id="choices"></div>
+        <div class="footer">
+          <div class="subtitle">Progreso: <span id="progress">0</span> pasos</div>
+          <div>
+                        <button class="btn" id="btnRestart">Reiniciar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- End -->
+    <section id="end" class="card hidden">
+      <div class="pad">
+        <h2 class="title" id="end-title">¡Final!</h2>
+        <p class="subtitle" id="end-text"></p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="good" id="btnAgain">Jugar otra vez</button>
+          <button class="btn" id="btnExport">Exportar resultados (.txt)</button>
+        </div>
+        <div class="footer"><span class="subtitle">Juego offline, datos locales.</span></div>
+      </div>
+    </section>
+  </div>
+
+<script>
+/* ===== Salvaguarda global: se houver erro JS, avisa e não trava a troca de tela ===== */
+window.onerror = function(msg){ alert('Erro de script detectado: '+msg); };
+
+/* ===== Vídeos por cena (pode trocar por arquivos locais .mp4) ===== */
+const VIDEOS = {
+  start:{src:'media/dormitorio.mp4',cap:'Sección 1 — El dormitorio'},
+  sala:{src:'media/sala.mp4',cap:'Sección 2 — La sala'},
+  cocina:{src:'media/cocina.mp4',cap:'Sección 3 — La cocina'},
+  bano:{src:'media/bano.mp4',cap:'Sección 4 — El baño'},
+  comedor:{src:'media/comedor.mp4',cap:'Sección 5 — El comedor'},
+  despensa:{src:'media/despensa.mp4',cap:'Sección 6 — La despensa'},
+  pasillo:{src:'media/pasillo.mp4',cap:'Sección 7 — El pasillo'},
+  estudio:{src:'media/estudio_pobre.mp4',cap:'Sección 8 — El cuarto de estudio'},
+  piso2: { src: 'media/piso2_escalera.mp4', cap: 'Sección 9 — El segundo piso' },
+  patio:{src:'media/patio.mp4',cap:'Sección 10 — El patio'},
+  jardin:{src:'media/jardin.mp4',cap:'Sección 11 — El jardín'},
+  garaje:{src:'media/garaje.mp4',cap:'Sección 12 — El garaje'},
+  fin:{ src:'media/fantasma.mp4', cap:'❌ Fin de juego' },
+  'final-feliz':{src:'media/escape_lluvia.mp4',cap:'final-feliz'},
+
+};
+
+/* ===== Nós da história ===== */
+const NODES = {
+  start:{id:'start', text:'Estás solo en tu casa. Afuera, la lluvia golpea con fuerza la <span class="voc">ventana</span> del <span class="voc">dormitorio</span>. El viento hace temblar las <span class="voc">cortinas</span> y una sombra se proyecta sobre la <span class="voc">pared</span>. De pronto, la luz se apaga. Todo queda en silencio, excepto el goteo del agua que cae del <span class="voc">techo</span>. La <span class="voc">cama</span> está desordenada, el <span class="voc">armario</span> entreabierto, y sobre la <span class="voc">mesita de noche</span>, una <span class="voc">lámpara</span> parpadea por última vez antes de apagarse. Sientes un escalofrío. Algo se mueve bajo la <span class="voc">cama</span>... o quizá fue solo el reflejo en el <span class="voc">espejo</span> roto frente a la <span class="voc">puerta</span>.',choices:[
+  { label:'Bajar las <span class="voc">escaleras</span> hacia la <span class="voc">sala</span> del segundo <span class="voc">piso</span>', goto:'sala' },
+  { label:'Saltar por la <span class="voc">ventana</span> y caer en el <span class="voc">jardín</span>', goto:'fin_jardin' }
+]},
+
+  sala:{
+  id:'sala',
+  text:'La <span class="voc">sala</span> está en penumbra. La <span class="voc">lámpara</span> del rincón parpadea, proyectando sombras sobre el <span class="voc">sofá</span> y la vieja <span class="voc">alfombra</span> cubierta de polvo. Un reloj de pared marca la medianoche con un sonido seco, y algo cruje detrás de la <span class="voc">puerta</span> del <span class="voc">pasillo</span>.<br><br>El olor a madera húmeda llena el aire. Sobre la <span class="voc">mesa</span>, hay una taza de café todavía tibia. Sientes un escalofrío: alguien estuvo aquí hace poco... o quizá aún esté. Las <span class="voc">cortinas</span> se mueven lentamente aunque las <span class="voc">ventanas</span> están cerradas. Desde la <span class="voc">escalera</span> al fondo, se escuchan pasos lentos que bajan, uno a uno.',
+  choices:[
+    {label:'Bajar por las <span class="voc">escaleras</span> hasta la <span class="voc">cocina</span> y tratar de encender la <span class="voc">luz</span>', goto:'cocina'},
+    {label:'Caminar con cuidado hacia el <span class="voc">baño</span>', goto:'bano'},
+    {label:'Volver al <span class="voc">dormitorio</span> para cerrar la <span class="voc">puerta</span>', goto:'start'}
+  ]
+},
+
+  cocina:{
+  id:'cocina',
+   text:`La <span class="voc">cocina</span> está en penumbra. La <span class="voc">nevera</span> se abre sola con un crujido metálico, y un aire frío sale lentamente.  
+  Los <span class="voc">platos</span> caen al <span class="voc">suelo</span>, rompiéndose en mil pedazos que resuenan como ecos en la noche.  
+  Sobre la <span class="voc">mesa</span>, un <span class="voc">vaso</span> tiembla hasta volcarse, derramando agua que se desliza hacia el <span class="voc">fregadero</span>.  
+  La <span class="voc">luz</span> del <span class="voc">refrigerador</span> parpadea, proyectando sombras que parecen moverse solas.  
+  Desde la <span class="voc">puerta</span> del <span class="voc">pasillo</span>, algo respira, aunque no puedes ver nada.  
+  El aire huele a gas y a miedo. La <span class="voc">ventana</span> vibra con el viento, y por un instante, crees ver una figura pálida reflejada en el vidrio… pero al parpadear, ya no está.`,
+choices:[
+    {label: 'Abrir con cuidado la <span class="voc">puerta</span> que conduce al <span class="voc">comedor</span>, donde la <span class="voc">mesa</span> parece estar lista para alguien', goto: 'comedor'},
+    {label: 'Caminar lentamente hacia la <span class="voc">despensa</span>, pasando junto al <span class="voc">refrigerador</span> y los <span class="voc">armarios</span> que crujen en la oscuridad', goto: 'despensa'},
+    {label: 'Regresar al <span class="voc">dormitorio</span>, subiendo las <span class="voc">escaleras</span> mientras el sonido de la <span class="voc">lluvia</span> golpea las <span class="voc">ventanas</span>', goto: 'start'},
+    {label: 'Ir al <span class="voc">baño</span> siguiendo el sonido del <span class="voc">agua</span> que gotea detrás de la <span class="voc">puerta</span> entreabierta', goto: 'bano'},
+  ]},
+  bano:{
+  id:'bano',
+  text:`El <span class="voc">baño</span> está completamente oscuro, excepto por el débil reflejo de la <span class="voc">luz</span> del pasillo.  
+  El <span class="voc">espejo</span> está empañado, y sobre el vidrio comienza a formarse lentamente una huella de <span class="voc">mano</span> como si alguien invisible la presionara desde el otro lado.  
+  Las <span class="voc">gotas</span> caen del <span class="voc">grifo</span>, cada una marcando el silencio con un sonido seco.  
+  La <span class="voc">cortina</span> del <span class="voc">ducha</span> se mueve sin viento, y el <span class="voc">lavabo</span> está lleno de agua turbia que refleja algo que no debería estar allí.  
+  Un olor a humedad se mezcla con un susurro débil que parece salir del <span class="voc">inodoro</span>.  
+  Tus manos tiemblan mientras decides qué hacer.`,
+choices:[
+    {label: 'Salir rápido al <span class="voc">pasillo</span> y abrir la primera <span class="voc">puerta</span> iluminada a la derecha', goto: 'sala'},
+    {label: 'Mirar fijamente el <span class="voc">espejo</span> empañado junto al <span class="voc">lavabo</span>', goto: 'fin'},
+    {label: 'Quedarse allí, sentado junto a la <span class="voc">bañera</span>, esperando hasta que amanezca', goto: 'fin'},
+  ]},
+  comedor:{id:'comedor',text:`La <span class="voc">mesa</span> está puesta con precisión, pero cubierta de polvo.  
+Una sola <span class="voc">lámpara</span> encendida parpadea en el centro, proyectando sombras sobre las <span class="voc">paredes</span> lisas.  
+Los <span class="voc">cubiertos</span> metálicos reflejan la luz débil, y una <span class="voc">silla</span> se balancea apenas, como si alguien invisible acabara de moverse.  
+Desde el <span class="voc">pasillo</span>, una sombra alta cruza lentamente la puerta y desaparece.  
+El silencio es tan profundo que se escucha el crujir de la madera y el leve zumbido de la electricidad en los cables del <span class="voc">techo</span>.`,
+choices:[
+    {label:'Abrir lentamente la <span class="voc">puerta</span> que conecta con el <span class="voc">pasillo</span> oscuro',goto:'pasillo'},
+    {label:'Sentarte en la <span class="voc">silla</span> frente a la <span class="voc">mesa</span>, observando cómo la <span class="voc">lámpara</span> parpadea y una sombra se mueve detrás de ti', goto:'fin'},
+    {label:'Abrir con cuidado la <span class="voc">puerta</span> que lleva a la <span class="voc">despensa</span>, donde el olor a humedad se hace más fuerte', goto:'despensa'},
+    {label:'Volver al <span class="voc">baño</span> siguiendo el reflejo débil de la luz que parpadea sobre el <span class="voc">espejo</span> empañado', goto:'bano'},
+  ]},
+  despensa:{id:'despensa',text:`La <span class="voc">despensa</span> está envuelta en penumbra.  
+Una <span class="voc">bombilla</span> vieja cuelga del <span class="voc">techo</span>, emitiendo una luz débil que parpadea de vez en cuando.  
+En los <span class="voc">estantes</span> se alinean frascos polvorientos, <span class="voc">botellas</span> medio vacías y <span class="voc">latas</span> oxidadas.  
+Un leve olor a humedad y metal llena el aire.  
+El <span class="voc">suelo</span> de madera cruje bajo tus pasos, y algo gotea en el rincón, marcando el tiempo con un sonido constante.  
+La <span class="voc">puerta</span> del fondo permanece entreabierta, y detrás solo se ve oscuridad.  
+Sientes que alguien respira muy despacio... o tal vez es solo el eco del agua cayendo desde una tubería invisible.`,
+choices:[
+    {label:'Escapar por una <span class="voc">puerta</span> secreta detrás de los <span class="voc">estantes</span>, avanzando hacia el <span class="voc">pasillo</span> en penumbra', goto:'pasillo'},
+    {label:'Buscar algo de comida entre los <span class="voc">estantes</span> cubiertos de polvo y <span class="voc">latas</span> oxidadas que resuenan al tocarlas', goto:'fin'},
+  ]},
+  pasillo:{id:'pasillo',text:`El <span class="voc">pasillo</span> es largo y estrecho, hecho completamente de madera vieja que cruje con cada paso.  
+  Las <span class="voc">paredes</span> muestran grietas y manchas de humedad.  
+  Una débil <span class="voc">bombilla</span> oscila en el <span class="voc">techo</span>, lanzando sombras que parecen moverse solas.  
+  Al fondo, una <span class="voc">puerta</span> entreabierta deja ver una tenue luz... o quizá solo el reflejo de tus propios miedos.  
+  Sientes que algo respira cerca, detrás de una de las <span class="voc">puertas</span> cerradas.`,
+choices:[
+    {label:'Entrar en el <span class="voc">cuarto de estudio</span>, donde una <span class="voc">lámpara</span> encendida parpadea sobre una vieja <span class="voc">mesa</span> llena de libros abiertos', goto:'estudio'},
+    {label:'Subir al <span class="voc">segundo piso</span> por las viejas <span class="voc">escaleras</span> de madera que crujen con cada paso en la oscuridad', goto:'piso2'},
+    {label:'Regresar a la <span class="voc">sala</span>, siguiendo el eco de tus pasos sobre el <span class="voc">piso</span> de madera mientras la luz del pasillo se apaga lentamente', goto:'sala'},
+  ]},
+  estudio:{id:'estudio',text:`El <span class="voc">cuarto de estudio</span> está en penumbra.  
+  La <span class="voc">lámpara</span> vieja del <span class="voc">escritorio</span> parpadea,  
+  proyectando sombras sobre los libros abiertos y las <span class="voc">paredes</span> descascaradas.  
+  El <span class="voc">suelo</span> cruje con cada paso,  
+  y una <span class="voc">ventana</span> rota deja entrar el silbido del viento.  
+  Un olor a humedad llena el aire.  
+  Uno de los cuadernos se mueve solo, como si alguien acabara de pasar la página.  
+  En la esquina, una sombra se desliza lentamente detrás de la <span class="voc">silla</span>...  
+  No hay duda: alguien —o algo— estuvo aquí hace poco.`,
+choices:[
+    {label:'Abrir la <span class="voc">puerta</span> lateral y salir al <span class="voc">patio</span> oscuro, escuchando el crujir del <span class="voc">suelo</span> detrás de ti', goto:'bano'},
+    {label:'Abrir la <span class="voc">ventana</span> hacia el <span class="voc">jardín</span> y sentir el aire frío mezclado con un olor extraño', goto:'fin'},
+    {label:'Subir al <span class="voc">segundo piso</span> por las viejas <span class="voc">escaleras</span> que tiemblan con cada paso mientras la luz de la <span class="voc">lámpara</span> parpadea detrás de ti', goto:'piso2'},
+    {label:'Ir al <span class="voc">comedor</span>, siguiendo el débil reflejo de una <span class="voc">lámpara</span> encendida que brilla al fondo del <span class="voc">pasillo</span>', goto:'comedor'},
+
+  ]},
+  piso2:{id:'piso2', text:`El <span class="voc">segundo piso</span> huele a madera húmeda y polvo viejo.  
+  La amplia <span class="voc">escalera</span> queda atrás,  
+  y frente a ti se abre un pequeño <span class="voc">salón</span> oscuro con <span class="voc">paredes</span> agrietadas.  
+  Una <span class="voc">bombilla</span> solitaria parpadea en el <span class="voc">techo</span>,  
+  proyectando sombras que parecen moverse por sí solas.  
+  El <span class="voc">suelo</span> cruje bajo tus pasos, y el aire es tan frío que puedes ver tu aliento.  
+  Desde el fondo del <span class="voc">corredor</span>, algo golpea suavemente…  
+  una <span class="voc">puerta</span> que se abre y se cierra sin viento.`,
+choices:[
+    {label:'Bajar al <span class="voc">pasillo</span> otra vez, escuchando el crujir de las <span class="voc">escaleras</span> y el eco de tus pasos en la oscuridad', goto:'pasillo'},
+    {label:'Entrar en el <span class="voc">sótano</span>, descendiendo por los <span class="voc">peldaños</span> húmedos mientras el olor a moho y tierra fría se hace más intenso', goto:'fin'},
+    {label:'Salir por la <span class="voc">puerta</span> lateral al <span class="voc">patio</span>, donde el aire huele a tierra mojada y se escucha el viento mover las ramas en la oscuridad', goto:'patio'},
+    {label:'Abrir la <span class="voc">ventana</span> hacia el <span class="voc">jardín</span> y sentir cómo entra el viento helado mientras algo se mueve entre las sombras de los árboles', goto:'fin'},
+  ]},
+  patio:{id:'patio',title:'Sección 10 — El patio',
+  text:`El <span class="voc">patio</span> del segundo piso está envuelto en una penumbra helada. 
+  La luz de la luna llena el aire con un brillo azulado que apenas deja ver el borde del <span class="voc">jardín</span>. 
+  Desde aquí arriba, todo parece inmóvil… pero algo se mueve entre las sombras de los árboles.  
+  El viento sopla entre los barrotes de la <span class="voc">balcón</span>, trayendo consigo un susurro que suena como tu nombre.  
+  Al fondo, la <span class="voc">puerta</span> abierta hacia el interior de la casa parece observarte.  
+  Sientes que algo —o alguien— está justo detrás, respirando en tu nuca.  
+  Tu pulso se acelera. Debes decidir qué hacer antes de que la oscuridad te encuentre.`,
+choices:[
+    {label:'Caminar lentamente hacia el <span class="voc">garaje</span>, siguiendo el eco de tus pasos sobre el <span class="voc">suelo</span> húmedo',goto:'garaje'},
+    {label:'Cruzar el <span class="voc">jardín</span> hasta la <span class="voc">puerta principal</span>, apartando las ramas mojadas mientras la luna ilumina el camino con un brillo helado',goto:'jardin'},
+    {label:'Entrar en el <span class="voc">sótano</span>, bajando los <span class="voc">peldaños</span> resbaladizos mientras el aire se vuelve más denso y el olor a moho te envuelve por completo',goto:'fin'},
+  ]},
+  jardin:{id:'jardin', text:`El <span class="voc">jardín</span> está cubierto por una niebla espesa que brilla bajo la luna llena.  
+  Las plantas parecen moverse con el viento, rozando tus piernas como si intentaran detenerte.  
+  A lo lejos, la <span class="voc">puerta</span> del <span class="voc">portón</span> principal se balancea lentamente, chirriando en la oscuridad.  
+  El olor a tierra mojada y hojas podridas llena el aire, mientras escuchas un leve murmullo detrás de los arbustos.  
+  Algo —o alguien— parece observarte entre las sombras.  
+  El camino hacia la salida está delante de ti… pero no sabes si podrás llegar.`,
+choices:[
+    {label:'Saltar la reja y correr del <span class="voc">portón</span> hacia la calle vacía, sintiendo el viento frío de la noche',goto:'final-feliz'},
+    {label:'Entrar de nuevo en la <span class="voc">casa</span>, empujando la <span class="voc">puerta</span> que cruje mientras el viento apaga la última luz de la luna',goto:'start'},
+    {label:'Ir al <span class="voc">garaje</span> para no morir, corriendo entre las sombras mientras el eco de tus pasos resuena bajo la lluvia... tal vez consigas escapar en el coche',goto:'garaje'},
+  ]},
+garaje:{id:'garaje',text:'El <span class="voc">garaje</span> está en penumbra, iluminado apenas por una <span class="voc">bombilla</span> amarillenta que parpadea sobre el coche. El olor a gasolina se mezcla con el de aceite viejo y metal oxidado. Escuchas cómo una gota> de agua cae desde el <span class="voc">techo</span> una y otra vez, marcando el tiempo. Afuera, el viento golpea la <span class="voc">puerta</span> del <span class="voc">garaje</span> y las sombras parecen moverse en las paredes. Metes la mano temblando en el bolsillo y sientes las llaves frías. ¿Deberías encender el motor o esconderte?',
+choices:[
+  {label:'Abrir lentamente el <span class="voc">portón</span> del <span class="voc">garaje</span> y salir a la calle bajo la lluvia',goto:'fin'},
+  {label:'Cerrar la <span class="voc">puerta</span> con cuidado y regresar al <span class="voc">patio</span> bajo la noche silenciosa',goto:'patio'},
+  {label:'Salir al <span class="voc">jardín</span>, empujando la <span class="voc">puerta</span> oxidada del <span class="voc">garaje</span> mientras el viento frío apaga el último eco del motor',goto:'jardin'},
+]}
+
+// <<< FECHA O OBJETO NODES AQUI >>>
+}; 
+
+// ===== Repondo os finais FORA do literal (à prova de erro) =====
+Object.assign(NODES, {
+ fin:{
+  id:'fin',
+  title:'❌ Fin de juego',
+  text:'Has entrado en la misma habitación que el <span class="voc">fantasma</span>.<br>Tu misión terminó aquí.<br><br>👉 Pulsa en “Volver a intentar” para empezar otra vez.',
+  end:'bad'
+},
+
+  'final-feliz': {
+    id: 'final-feliz',
+    title: '🎉 ¡Final feliz!',
+    text: '¡Has escapado! Enhorabuena.',
+    end: 'good'
+  },
+  fin_jardin: {
+    id: 'fin_jardin',
+    end: true,
+    title: '⚠️ Fin del juego — ¡Demasiado arriesgado!',
+    text: 'Saltas por la <span class="voc">ventana</span> y el viento te arrastra hasta el <span class="voc">jardín</span>. Sientes un golpe fuerte y todo se vuelve oscuro...<br><br>Minutos después, despiertas en el suelo mojado, empapado por la lluvia. Entiendes que fue una mala decisión.<br><br><b>Consejo:</b> En las casas antiguas, es más seguro usar las <span class="voc">escaleras</span> o buscar ayuda en otro <span class="voc">piso</span>. ¡Intenta de nuevo con cuidado!',
+    end: 'bad'
+  }
+});
+
+/* ===== Áudio de terror (vento + batimentos + rangidos) ===== */
+let ctx, ambient, sfx, windNode, hbOsc, hbGain;
+function ensureAudio(){
+  if(ctx) return;
+  ctx = new (window.AudioContext||window.webkitAudioContext)();
+  ambient = ctx.createGain(); ambient.gain.value=0.18; ambient.connect(ctx.destination);
+  sfx = ctx.createGain(); sfx.gain.value=0.32; sfx.connect(ctx.destination);
+
+  // vento
+  const size=2*ctx.sampleRate, buf=ctx.createBuffer(1,size,ctx.sampleRate), ch=buf.getChannelData(0);
+  for(let i=0;i<size;i++) ch[i]=(Math.random()*2-1)*0.55;
+  windNode=ctx.createBufferSource(); windNode.buffer=buf; windNode.loop=true;
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650;
+  const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=35;
+  windNode.connect(lp); lp.connect(hp); hp.connect(ambient); windNode.start();
+
+  // batimentos
+  hbOsc=ctx.createOscillator(); hbOsc.type='sine'; hbOsc.frequency.value=55;
+  hbGain=ctx.createGain(); hbGain.gain.value=0.00001; hbOsc.connect(hbGain); hbGain.connect(ambient); hbOsc.start();
+  (function loopHB(){const t=ctx.currentTime; hbGain.gain.setValueAtTime(0.00001,t); hbGain.gain.exponentialRampToValueAtTime(0.0025,t+0.02); hbGain.gain.exponentialRampToValueAtTime(0.00001,t+0.28); hbGain.gain.exponentialRampToValueAtTime(0.002,t+0.40); hbGain.gain.exponentialRampToValueAtTime(0.00001,t+0.70); setTimeout(loopHB,1200)})();
+  setInterval(()=>creak(), 6000+Math.random()*4000);
+}
+function creak(){ if(!ctx)return; const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=140; const g=ctx.createGain(); g.gain.value=0.0008; g.gain.exponentialRampToValueAtTime(0.00001,ctx.currentTime+0.5); const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=500; o.connect(bp); bp.connect(g); g.connect(sfx); o.start(); o.stop(ctx.currentTime+0.7); flash(0.05); }
+function boom(){ if(!ctx)return; const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=160; const g=ctx.createGain(); g.gain.value=0.002; g.gain.exponentialRampToValueAtTime(0.00001,ctx.currentTime+0.6); o.connect(g); g.connect(sfx); o.start(); o.stop(ctx.currentTime+0.6); shake(); }
+function chime(){ if(!ctx)return; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=520; const g=ctx.createGain(); g.gain.value=0.002; g.gain.exponentialRampToValueAtTime(0.00001,ctx.currentTime+0.5); o.connect(g); g.connect(sfx); o.start(); o.stop(ctx.currentTime+0.5); flash(0.08); }
+function click(){ if(!ctx)return; const o=ctx.createOscillator(); o.type='square'; o.frequency.value=260; const g=ctx.createGain(); g.gain.value=0.0016; g.gain.exponentialRampToValueAtTime(0.00001,ctx.currentTime+0.12); o.connect(g); g.connect(sfx); o.start(); o.stop(ctx.currentTime+0.12); }
+function flash(x){ const el=document.getElementById('flash'); el.style.background=`rgba(255,255,255,${x})`; setTimeout(()=>el.style.background='rgba(255,255,255,0)',60) }
+function shake(){ const el=document.querySelector('.hero'); el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),600); }
+
+/* ===== Estado / Render ===== */
+let history=[], steps=0;
+const $=s=>document.querySelector(s);
+function savePlayer(name,group){localStorage.setItem('falange_escape_player',JSON.stringify({name,group,playedAt:new Date().toISOString()}))}
+function loadPlayer(){try{return JSON.parse(localStorage.getItem('falange_escape_player'))}catch(e){return null}}
+function pill(){const p=loadPlayer(); $('#player-pill').textContent=p?.name?`Jugador: ${p.name} • ${p.group||'—'}`:'Jugador: —'}
+function show(id){['#start','#game','#end'].forEach(sel=>$(sel).classList.add('hidden')); $(id).classList.remove('hidden')}
+function setHero(key){const v=$('#hero-video'); const item=VIDEOS[key]||VIDEOS.start; v.src=item.src; v.play().catch(()=>{}); $('#hero-cap').textContent=item.cap||''}
+
+function render(id){
+  const node = NODES[id]; if(!node) return;
+  steps++; $('#progress').textContent = steps; history.push(id);
+
+  if (node.end) {
+  show('#end');
+  $('#end-title').textContent = node.title;
+  $('#end-text').innerHTML = node.text;
+  setHero(id);
+
+  if (node.end === 'good') {
+    chime();
+    // Abre o Google Forms automaticamente com nome e turma
+    const p = loadPlayer();
+    const nome = encodeURIComponent(p?.name || '');
+    const turma = encodeURIComponent(p?.group || '');
+    const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSdyZGWYZWxXDYo7qL63e41H_PO8KNLoRhVqFPngDtAneI8Hcw/viewform?usp=pp_url&entry.1020166171=${nome}&entry.1055343038=${turma}`;
+    setTimeout(() => window.open(formUrl, '_blank'), 2500);
+  } else {
+    boom();
+  }
+
+  return;
+}
+
+  show('#game');
+  setHero(id);
+  $('#scene-title').textContent = node.title;
+  $('#scene-text').innerHTML    = node.text;   // ← aqui (era textContent)
+
+  const box = $('#choices');
+  box.innerHTML = '';
+  node.choices.forEach(ch => {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.innerHTML=ch.label;
+    b.onclick = ()=>{ click(); render(ch.goto) };
+    box.appendChild(b);
+  });
+}
+
+function back(){ if(history.length<=1) return; history.pop(); const prev=history.pop(); steps=Math.max(0,steps-1); render(prev) }
+function restart(){ history=[]; steps=0; $('#progress').textContent='0'; render('start') }
+function exportTxt(){ const p=loadPlayer()||{name:'—',group:'—'}; const text=[`ESCAPA DE LA CASA ENCANTADA — FALANGE`,`Jugador: ${p.name} | Turma: ${p.group}`,`Fecha: ${new Date().toLocaleString()}`,`Pasos: ${steps}`,`Ruta: ${history.join(' -> ')}`].join('\n'); const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'})); a.download=`resultado_${Date.now()}.txt`; a.click(); }
+
+/* ===== Eventos ===== */
+function startGame(){
+  const name = $('#name').value.trim();
+  const group = $('#class').value.trim();
+
+  if(!name || !group){
+    alert('Por favor, escribe tu nombre y tu turma.');
+    (!name ? $('#name') : $('#class')).focus();
+    return;
+  }
+
+  savePlayer(name, group);
+  pill();
+
+  // toca a trilha de terror assim que o jogador clicar
+  try {
+    const bgm = document.getElementById('bgm');
+    if (bgm) {
+      bgm.volume = 0.6; // volume de 0 a 1
+      bgm.muted = false;
+      bgm.load();
+      const p = bgm.play();
+      if (p && typeof p.then === 'function') {
+        p.catch(()=> {
+          alert('O navegador bloqueou o áudio automático. Clique em qualquer lugar da página e tente novamente.');
+        });
+      }
+    }
+  } catch(e) {
+    console.log('Erro ao tocar o áudio:', e);
+  }
+
+  // ativa os sons ambientes do jogo
+  try { ensureAudio(); } catch(e) {}
+
+  // vai para o jogo
+  show('#game');
+  setTimeout(()=>render('start'), 0);
+}
+$('#btnStart').addEventListener('click', startGame);
+// 🔊 Ativa o áudio assim que o usuário clicar em qualquer lugar da tela inicial
+document.addEventListener('click', () => {
+  const bgm = document.getElementById('bgm');
+  if (bgm && bgm.paused) {
+    bgm.volume = 0.6; // volume inicial (0 a 1)
+    bgm.muted = false;
+    bgm.play().catch(() => {});
+  }
+}, { once: true });
+
+document.addEventListener('keydown',e=>{ if(e.key==='Enter' && !$('#start').classList.contains('hidden')) startGame() });
+$('#testAudio').addEventListener('click',()=>{ try{ ensureAudio(); creak(); }catch(e){} });
+const btnBack = document.querySelector('#btnBack');
+if (btnBack) {
+  btnBack.addEventListener('click', back);
+}
+$('#btnRestart').addEventListener('click', restart);
+$('#btnAgain').addEventListener('click', restart);
+$('#btnExport').addEventListener('click', exportTxt);
+
+// Prefill
+(function(){const p=loadPlayer(); if(p){ $('#name').value=p.name||''; $('#class').value=p.group||''; pill(); }})();
+</script>
+
+<script>
+(function(){
+  var v = document.getElementById('startVideo');
+  if(!v) return;
+  function hideStartVideo(){
+    try{ v.classList.add('fade'); setTimeout(function(){try{v.pause();v.currentTime=0;v.style.display='none';}catch(e){}},650);}catch(e){}
+  }
+  document.addEventListener('click', function(e){
+    var t=e.target; if(!t) return;
+    var text=(t.innerText||t.textContent||'').toLowerCase();
+    if(/comenzar|começar|iniciar|start|jugar/.test(text)) hideStartVideo();
+  }, true);
+  window.addEventListener('hashchange', function(){
+    if(location.hash && /game|dormitorio|sala|cocina|inicio/.test(location.hash.toLowerCase())) hideStartVideo();
+  });
+  setTimeout(hideStartVideo, 20000);
+})();
+</script>
+<script>
+// tenta tocar ao carregar; se o navegador bloquear, ativa no 1º gesto (digitar/clicar/toque)
+(function(){
+  const VOLUME_INICIAL = 0.25;
+
+  function tryPlay() {
+    const bgm = document.getElementById('bgm');
+    if (!bgm) return;
+    bgm.volume = VOLUME_INICIAL;
+    bgm.muted = false;
+    const p = bgm.play();
+    if (p && typeof p.then === 'function') {
+      return p.catch(()=>{ /* bloqueado, sem problema */ });
+    }
+  }
+
+  // tenta ao carregar a página
+  window.addEventListener('load', () => { tryPlay(); });
+
+  // se foi bloqueado, roda no primeiro gesto do usuário (inclusive TECLA ao digitar)
+  function startOnFirstGesture() {
+    tryPlay();
+    // remove os listeners depois da 1ª tentativa, para não repetir
+    ['pointerdown','keydown','touchstart'].forEach(evt =>
+      window.removeEventListener(evt, startOnFirstGesture, true)
+    );
+  }
+  ['pointerdown','keydown','touchstart'].forEach(evt =>
+    window.addEventListener(evt, startOnFirstGesture, true)
+  );
+})();
+</script>
+<script>
+// Oculta qualquer elemento que contenha exatamente esta frase (sem alterar o resto do jogo)
+(function hideTagline(){
+  const TARGET = "Vídeos realistas + audio de terror.";
+  function run(){
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const hits = [];
+    while (walker.nextNode()) {
+      const t = walker.currentNode;
+      if ((t.nodeValue || "").trim() === TARGET || (t.nodeValue || "").includes(TARGET)) {
+        hits.push(t);
+      }
+    }
+    hits.forEach(t => {
+      const el = t.parentElement;
+      // esconde o contêiner imediato e, se existir, um contêiner maior típico de legenda
+      (el.closest(".hero-caption, .tagline, header p, header .subtitle") || el).style.display = "none";
+    });
+  }
+  run();
+  // se o jogo recriar o cabeçalho dinamicamente, tenta de novo
+  new MutationObserver(run).observe(document.body, {childList:true,subtree:true});
+})();
+</script>
+<script>
+  // Oculta o botão "Exportar resultados (.txt)" ao carregar a página
+  window.addEventListener('DOMContentLoaded', () => {
+    const btns = Array.from(document.querySelectorAll('button, a'));
+    const alvo = btns.find(b => /exportar resultados/i.test(b.textContent || ''));
+    if (alvo) alvo.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
